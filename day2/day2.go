@@ -5,12 +5,14 @@ import (
 	"strings"
 )
 
-func PositionTrack(course []string) []int {
+func PositionTrackNaive(course []string) []int {
 	horizontalPos := 0
-	verticalPos := 0
+	depth := 0
+
 	var currentInput []string
 	var direction string
 	var distance int
+
 	for _, next := range course {
 		currentInput = strings.Split(next, " ")
 		direction = currentInput[0]
@@ -19,10 +21,38 @@ func PositionTrack(course []string) []int {
 		case "forward":
 			horizontalPos += distance
 		case "up":
-			verticalPos -= distance
+			depth -= distance
 		case "down":
-			verticalPos += distance
+			depth += distance
 		}
 	}
-	return []int{horizontalPos, verticalPos}
+
+	return []int{horizontalPos, depth}
+}
+
+func PositionTrack(course []string) []int {
+	horizontalPos := 0
+	depth := 0
+	aim := 0
+
+	var currentInput []string
+	var direction string
+	var distance int
+
+	for _, next := range course {
+		currentInput = strings.Split(next, " ")
+		direction = currentInput[0]
+		distance, _ = strconv.Atoi(currentInput[1])
+		switch direction {
+		case "forward":
+			horizontalPos += distance
+			depth += distance * aim
+		case "up":
+			aim -= distance
+		case "down":
+			aim += distance
+		}
+	}
+
+	return []int{horizontalPos, depth}
 }
