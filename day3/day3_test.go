@@ -25,26 +25,26 @@ func TestBinaryDiagnostic(t *testing.T) {
 	}
 
 	t.Run("Test most common bit", func(t *testing.T) {
-		got := mostCommonBit(3, []string{"10100", "01010", "10000"})
+		got := commonBit(3, []string{"10100", "01010", "10000"}, 1)
 		want := '0'
 		if got != want {
 			t.Errorf("got %d want %d", got, want)
 		}
 	})
 
-	t.Run("Initial test of example data", func(t *testing.T) {
+	t.Run("Power consumption test of example data", func(t *testing.T) {
 		got := DiagnosticRates(report)
-		want := []int{22, 9}
+		want := Rates{Gamma: 22, Epsilon: 9}
 
 		if !reflect.DeepEqual(got, want) {
 			t.Errorf("got %v want %v", got, want)
 		}
 	})
 
-	t.Run("Initial test of full data", func(t *testing.T) {
+	t.Run("Power consumption test of full data", func(t *testing.T) {
 		report := readFullData(t, "day3.dat")
 		got := DiagnosticRates(report)
-		fmt.Printf("ℾ %d 𝜀 %d * %d\n", got[0], got[1], got[0]*got[1])
+		fmt.Printf("𝝲 %d 𝞊 %d * %d\n", got.Gamma, got.Epsilon, got.Gamma*got.Epsilon)
 	})
 }
 

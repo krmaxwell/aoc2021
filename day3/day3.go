@@ -5,25 +5,32 @@ import (
 	"strings"
 )
 
-func DiagnosticRates(report []string) []int {
+type Rates struct {
+	Gamma   int64
+	Epsilon int64
+}
+
+func DiagnosticRates(report []string) Rates {
 	var gammaBuilder strings.Builder
 	var epsilonBuilder strings.Builder
 
 	bitLength := len(report[0])
 
 	for i := 0; i < bitLength; i++ {
-		commonBit := mostCommonBit(i, report)
-		leastBit := leastCommonBit(i, report)
-		gammaBuilder.WriteRune(commonBit)
-		epsilonBuilder.WriteRune(leastBit)
+		mostCommonBit := commonBit(i, report, 1)
+		leastCommonBit := commonBit(i, report, 0)
+		gammaBuilder.WriteRune(mostCommonBit)
+		epsilonBuilder.WriteRune(leastCommonBit)
 	}
 
+	// note that we only return '0' or '1' so ParseInt() is guaranteed to succeed
 	gamma, _ := strconv.ParseInt(gammaBuilder.String(), 2, 0)
 	epsilon, _ := strconv.ParseInt(epsilonBuilder.String(), 2, 0)
-	return []int{int(gamma), int(epsilon)}
+
+	return Rates{Gamma: gamma, Epsilon: epsilon}
 }
 
-func mostCommonBit(pos int, report []string) rune {
+func commonBit(pos int, report []string, flag byte) rune {
 	zeroes := 0
 	ones := 0
 
@@ -35,26 +42,11 @@ func mostCommonBit(pos int, report []string) rune {
 		}
 	}
 
-	if zeroes > ones {
-		return '0'
+	if flag == 1 && ones > zeroes {
+		return '1'
+	} else if flag == 0 && zeroes > ones {
+		return '1'
 	}
-	return '1'
-}
+	return '0'
 
-func leastCommonBit(pos int, report []string) rune {
-	zeroes := 0
-	ones := 0
-
-	for _, binary := range report {
-		if binary[pos] == '0' {
-			zeroes++
-		} else {
-			ones++
-		}
-	}
-
-	if zeroes < ones {
-		return '0'
-	}
-	return '1'
 }
