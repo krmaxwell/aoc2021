@@ -1,6 +1,9 @@
 package day3
 
 import (
+	"bufio"
+	"fmt"
+	"os"
 	"reflect"
 	"testing"
 )
@@ -21,14 +24,6 @@ func TestBinaryDiagnostic(t *testing.T) {
 		"01010",
 	}
 
-	t.Run("Test binary conversion", func(t *testing.T) {
-		got := convertReport([]string{"00100", "01010"})
-		want := []int{4, 10}
-		if !reflect.DeepEqual(got, want) {
-			t.Errorf("got %v want %v", got, want)
-		}
-	})
-
 	t.Run("Test most common bit", func(t *testing.T) {
 		got := mostCommonBit(3, []string{"10100", "01010", "10000"})
 		want := '0'
@@ -37,12 +32,37 @@ func TestBinaryDiagnostic(t *testing.T) {
 		}
 	})
 
-	t.Run("Initial test", func(t *testing.T) {
+	t.Run("Initial test of example data", func(t *testing.T) {
 		got := DiagnosticRates(report)
-		want := 22
+		want := []int{22, 9}
 
-		if got != want {
-			t.Errorf("got %d want %d", got, want)
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v want %v", got, want)
 		}
 	})
+
+	t.Run("Initial test of full data", func(t *testing.T) {
+		report := readFullData(t, "day3.dat")
+		got := DiagnosticRates(report)
+		fmt.Printf("ℾ %d 𝜀 %d * %d\n", got[0], got[1], got[0]*got[1])
+	})
+}
+
+func readFullData(t *testing.T, fname string) []string {
+	t.Helper()
+	f, err := os.Open(fname)
+	if err != nil {
+		t.Fatalf("Could not open %q: %q", fname, err)
+	}
+
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	course := []string{}
+
+	for scanner.Scan() {
+		course = append(course, scanner.Text())
+	}
+
+	return course
 }
