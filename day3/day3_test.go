@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestBinaryDiagnostic(t *testing.T) {
+func TestPowerConsumptionRates(t *testing.T) {
 	report := []string{
 		"00100",
 		"11110",
@@ -33,7 +33,7 @@ func TestBinaryDiagnostic(t *testing.T) {
 	})
 
 	t.Run("Power consumption test of example data", func(t *testing.T) {
-		got := DiagnosticRates(report)
+		got := PowerConsumptionRates(report)
 		want := Rates{Gamma: 22, Epsilon: 9}
 
 		if !reflect.DeepEqual(got, want) {
@@ -43,8 +43,34 @@ func TestBinaryDiagnostic(t *testing.T) {
 
 	t.Run("Power consumption test of full data", func(t *testing.T) {
 		report := readFullData(t, "day3.dat")
-		got := DiagnosticRates(report)
+		got := PowerConsumptionRates(report)
 		fmt.Printf("𝝲 %d 𝞊 %d * %d\n", got.Gamma, got.Epsilon, got.Gamma*got.Epsilon)
+	})
+}
+
+func TestLifeSupportRating(t *testing.T) {
+	report := []string{
+		"00100",
+		"11110",
+		"10110",
+		"10111",
+		"10101",
+		"01111",
+		"00111",
+		"11100",
+		"10000",
+		"11001",
+		"00010",
+		"01010",
+	}
+
+	t.Run("Find oxygen rating in sample data", func(t *testing.T) {
+		got := OxygenRating(report)
+		want := int64(23)
+
+		if got != want {
+			t.Errorf("got %d want %d", got, want)
+		}
 	})
 }
 
