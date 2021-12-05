@@ -82,19 +82,29 @@ func TestPartOne(t *testing.T) {
 	layouts := getPuzzleInput(t, "day4.dat")
 
 	earliestWin := 999999
-	winningBoard := 0
-	winningScore := 0
+	earliestWinningBoard := 0
+	earliestWinningScore := 0
+	latestWin := 0
+	latestWinningBoard := 0
+	latestWinningScore := 0
+
 	for i, layout := range layouts {
 		board := Board{Layout: layout}
 		board = board.CalcResult(draw)
 		if board.Round < earliestWin {
 			earliestWin = board.Round
-			winningBoard = i
-			winningScore = board.Score
+			earliestWinningBoard = i
+			earliestWinningScore = board.Score
+		}
+		if board.Round > latestWin {
+			latestWin = board.Round
+			latestWinningBoard = i
+			latestWinningScore = board.Score
 		}
 	}
 
-	fmt.Printf("Board %d wins on round %d with score %d\n", winningBoard, earliestWin, winningScore)
+	fmt.Printf("Board %d wins on round %d with score %d\n", earliestWinningBoard, earliestWin, earliestWinningScore)
+	fmt.Printf("Board %d wins on round %d with score %d\n", latestWinningBoard, latestWin, latestWinningScore)
 }
 
 func getPuzzleInput(t *testing.T, fname string) []BoardLayout {
