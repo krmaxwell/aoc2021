@@ -77,52 +77,6 @@ func TestBoardScore(t *testing.T) {
 		t.Errorf("got %v want %v", got, want)
 	}
 }
-
-func TestWinningRowBoardState(t *testing.T) {
-	got := BoardState{
-		{true, true, true, true, true},
-		{false, false, false, false, false},
-		{false, false, false, false, false},
-		{false, false, false, false, false},
-		{false, false, false, false, false},
-	}.won()
-	want := true
-
-	if got != want {
-		t.Errorf("got %v want %v", got, want)
-	}
-}
-
-func TestWinningColumnBoardState(t *testing.T) {
-	got := BoardState{
-		{true, false, false, false, false},
-		{true, false, false, false, false},
-		{true, false, false, false, false},
-		{true, false, false, false, false},
-		{true, false, false, false, false},
-	}.won()
-	want := true
-
-	if got != want {
-		t.Errorf("got %v want %v", got, want)
-	}
-}
-
-func TestLosingBoardState(t *testing.T) {
-	got := BoardState{
-		{true, false, false, false, false},
-		{true, false, false, false, false},
-		{false, false, false, false, false},
-		{true, false, false, false, false},
-		{true, false, false, false, false},
-	}.won()
-	want := false
-
-	if got != want {
-		t.Errorf("got %v want %v", got, want)
-	}
-}
-
 func TestPartOne(t *testing.T) {
 	draw := []int{83, 69, 34, 46, 30, 23, 19, 75, 22, 37, 89, 78, 32, 39, 11, 44, 95, 43, 26, 48, 84, 53, 94, 88, 18, 40, 62, 35, 27, 42, 15, 2, 91, 20, 4, 64, 99, 71, 54, 97, 52, 36, 28, 7, 74, 45, 70, 86, 98, 1, 61, 50, 68, 6, 77, 8, 57, 47, 51, 72, 65, 3, 49, 24, 79, 13, 17, 92, 41, 80, 63, 67, 82, 90, 55, 0, 10, 93, 38, 21, 59, 73, 33, 31, 9, 76, 5, 66, 16, 58, 85, 87, 12, 29, 25, 14, 96, 56, 60, 81}
 	layouts := getPuzzleInput(t, "day4.dat")
