@@ -15,7 +15,7 @@ func TestWinningRoundByRow(t *testing.T) {
 		{22, 13, 17, 11, 0},
 		{8, 2, 23, 4, 24},
 		{21, 9, 14, 16, 7},
-		{6, 10, 4, 18, 5},
+		{6, 10, 3, 18, 5},
 		{1, 12, 20, 15, 19},
 	}}.CalcResult(draw)
 
@@ -87,16 +87,15 @@ func TestPartOne(t *testing.T) {
 	latestWin := 0
 	latestWinningBoard := 0
 	latestWinningScore := 0
-
 	for i, layout := range layouts {
 		board := Board{Layout: layout}
 		board = board.CalcResult(draw)
-		if board.Round < earliestWin {
+		if board.HasWon && board.Round < earliestWin {
 			earliestWin = board.Round
 			earliestWinningBoard = i
 			earliestWinningScore = board.Score
 		}
-		if board.Round > latestWin {
+		if board.HasWon && board.Round > latestWin {
 			latestWin = board.Round
 			latestWinningBoard = i
 			latestWinningScore = board.Score
@@ -124,8 +123,8 @@ func getPuzzleInput(t *testing.T, fname string) []BoardLayout {
 	}
 
 	puzzle := []BoardLayout{}
-	i := 0
-	for i < len(input)-5 {
+
+	for i := 0; i < len(input)-5; i += 6 {
 		currentBoard := BoardLayout{}
 		for j := 0; j < 5; j++ {
 			row := [5]int{}
@@ -137,9 +136,7 @@ func getPuzzleInput(t *testing.T, fname string) []BoardLayout {
 				}
 			}
 			currentBoard[j] = row
-			i += 1
 		}
-		i += 1 // skip a line between
 		puzzle = append(puzzle, currentBoard)
 	}
 
