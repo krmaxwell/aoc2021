@@ -44,7 +44,7 @@ func TestMapVents(t *testing.T) {
 
 	t.Run("Create diagram from example input", func(t *testing.T) {
 		lines := ConvertInputToLines(exampleInput)
-		got := CreateDiagramFromLines(lines, 10)
+		got := CreateDiagramFromLines(lines, 10, false)
 		want := []string{
 			".......1..",
 			"..1....1..",
@@ -59,13 +59,13 @@ func TestMapVents(t *testing.T) {
 		}
 
 		if !reflect.DeepEqual(got, want) {
-			t.Errorf("\ngot  %v \nwant %v", got, want)
+			t.Errorf("\ngot  %v\nwant %v", got, want)
 		}
 	})
 
 	t.Run("Count overlaps from scan", func(t *testing.T) {
 		lines := ConvertInputToLines(exampleInput)
-		data := ConvertLinesToData(lines, 10)
+		data := ConvertLinesToData(lines, 10, false)
 		got := CountOverlaps(data)
 		want := 5
 		if got != want {
@@ -76,7 +76,35 @@ func TestMapVents(t *testing.T) {
 	t.Run("Count overlaps from full data", func(t *testing.T) {
 		input := readFullData(t, "day5.dat")
 		lines := ConvertInputToLines(input)
-		data := ConvertLinesToData(lines, 1000)
+		data := ConvertLinesToData(lines, 1000, false)
+		fmt.Printf("Full data has %d overlaps\n", CountOverlaps(data))
+	})
+
+	t.Run("Create diagonal diagram from example input", func(t *testing.T) {
+		lines := ConvertInputToLines(exampleInput)
+		got := CreateDiagramFromLines(lines, 10, true)
+		want := []string{
+			"1.1....11.",
+			".111...2..",
+			"..2.1.111.",
+			"...1.2.2..",
+			".112313211",
+			"...1.2....",
+			"..1...1...",
+			".1.....1..",
+			"1.......1.",
+			"222111....",
+		}
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("\ngot  %v\nwant %v", got, want)
+		}
+	})
+
+	t.Run("Count overlaps with diagonals from full data", func(t *testing.T) {
+		input := readFullData(t, "day5.dat")
+		lines := ConvertInputToLines(input)
+		data := ConvertLinesToData(lines, 1000, true)
 		fmt.Printf("Full data has %d overlaps\n", CountOverlaps(data))
 	})
 

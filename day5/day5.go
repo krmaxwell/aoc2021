@@ -28,12 +28,12 @@ func ConvertInputToLines(input []string) []Line {
 	return lines
 }
 
-func CreateDiagramFromLines(scan []Line, dimension int) []string {
-	data := ConvertLinesToData(scan, dimension)
+func CreateDiagramFromLines(scan []Line, dimension int, diagonals bool) []string {
+	data := ConvertLinesToData(scan, dimension, diagonals)
 	diagram := make([]string, len(data))
-	for row := 0; row < 10; row++ {
+	for row := 0; row < dimension; row++ {
 		var rowS strings.Builder
-		for col := 0; col < 10; col++ {
+		for col := 0; col < dimension; col++ {
 			if data[col][row] > 0 {
 				point := strconv.Itoa(int(data[col][row]))
 				rowS.WriteString(point)
@@ -47,7 +47,7 @@ func CreateDiagramFromLines(scan []Line, dimension int) []string {
 	return diagram
 }
 
-func ConvertLinesToData(scan []Line, dimension int) [][]int64 {
+func ConvertLinesToData(scan []Line, dimension int, diagonals bool) [][]int64 {
 	var data = make([][]int64, dimension)
 	for i := 0; i < dimension; i++ {
 		data[i] = make([]int64, dimension)
@@ -68,6 +68,35 @@ func ConvertLinesToData(scan []Line, dimension int) [][]int64 {
 			for x := startX; x <= endX; x++ {
 				data[x][line.y1]++
 			}
+		} else if diagonals {
+			var i int64
+			//fmt.Printf("Plotting %d,%d to %d,%d\n", line.x1, line.y1, line.x2, line.y2)
+			if line.x1 < line.x2 && line.y1 < line.y2 {
+				dist := line.x2 - line.x1
+				for i = 0; i <= dist; i++ {
+					//fmt.Printf("Incrementing %d,%d\n", line.x1+i, line.y1+i)
+					data[line.x1+i][line.y1+i]++
+				}
+			} else if line.x1 < line.x2 && line.y1 > line.y2 {
+				dist := line.x2 - line.x1
+				for i = 0; i <= dist; i++ {
+					//fmt.Printf("Incrementing %d,%d\n", line.x1+i, line.y1-i)
+					data[line.x1+i][line.y1-i]++
+				}
+			} else if line.x1 > line.x2 && line.y1 < line.y2 {
+				dist := line.x1 - line.x2
+				for i = 0; i <= dist; i++ {
+					//fmt.Printf("Incrementing %d,%d\n", line.x1-i, line.y1+i)
+					data[line.x1-i][line.y1+i]++
+				}
+			} else if line.x1 > line.x2 && line.y1 > line.y2 {
+				dist := line.x1 - line.x2
+				for i = 0; i <= dist; i++ {
+					//fmt.Printf("Incrementing %d,%d\n", line.x1-i, line.y1-i)
+					data[line.x1-i][line.y1-i]++
+				}
+			}
+
 		}
 	}
 	return data
