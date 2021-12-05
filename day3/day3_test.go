@@ -64,13 +64,29 @@ func TestLifeSupportRating(t *testing.T) {
 		"01010",
 	}
 
-	t.Run("Find oxygen rating in sample data", func(t *testing.T) {
+	t.Run("Oxygen rating in sample data", func(t *testing.T) {
 		got := OxygenRating(report)
 		want := int64(23)
 
 		if got != want {
 			t.Errorf("got %d want %d", got, want)
 		}
+	})
+
+	t.Run("CO2 rating in sample data", func(t *testing.T) {
+		got := CO2Rating(report)
+		want := int64(10)
+
+		if got != want {
+			t.Errorf("got %d want %d", got, want)
+		}
+	})
+
+	t.Run("Life support rating for full data", func(t *testing.T) {
+		report := readFullData(t, "day3.dat")
+		oxy := OxygenRating(report)
+		co2 := CO2Rating(report)
+		fmt.Printf("O2 %d CO2 %d * %d\n", oxy, co2, oxy*co2)
 	})
 }
 

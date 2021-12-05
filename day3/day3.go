@@ -36,15 +36,13 @@ func OxygenRating(report []string) int64 {
 
 	for i := 0; i < bitLength; i++ {
 		mostCommonBit := commonBit(i, report, 1)
-		for j, reading := range report {
-			if reading[i] != byte(mostCommonBit) {
-				report = remove(report, j)
-			}
-			if j == len(report) {
-				fmt.Printf("Reached end of report: %d\n", j)
-				break
+		newReport := []string{}
+		for _, reading := range report {
+			if reading[i] == byte(mostCommonBit) {
+				newReport = append(newReport, reading)
 			}
 		}
+		report = newReport
 	}
 	if len(report) > 1 {
 		panic(fmt.Sprintf("Didn't filter to 1 result (%d)", len(report)))
@@ -53,9 +51,28 @@ func OxygenRating(report []string) int64 {
 	return result
 }
 
-func remove(data []string, position int) []string {
-	fmt.Printf("Removing %q\n", data[position])
-	return append(data[:position], data[position+1])
+func CO2Rating(report []string) int64 {
+	bitLength := len(report[0])
+
+	for i := 0; i < bitLength; i++ {
+		leastCommonBit := commonBit(i, report, 0)
+		fmt.Printf("Least common bit for pos %d is %q\n", i, leastCommonBit)
+		newReport := []string{}
+		for _, reading := range report {
+			if reading[i] == byte(leastCommonBit) {
+				newReport = append(newReport, reading)
+			}
+		}
+		report = newReport
+		if len(report) == 1 {
+			break
+		}
+	}
+	if len(report) > 1 {
+		panic(fmt.Sprintf("Didn't filter to 1 result (%d)", len(report)))
+	}
+	result, _ := strconv.ParseInt(report[0], 2, 0)
+	return result
 }
 
 func commonBit(pos int, report []string, flag byte) rune {
@@ -72,7 +89,7 @@ func commonBit(pos int, report []string, flag byte) rune {
 
 	if flag == 1 && ones >= zeroes {
 		return '1'
-	} else if flag == 0 && zeroes >= ones {
+	} else if flag == 0 && zeroes > ones {
 		return '1'
 	}
 	return '0'
