@@ -78,6 +78,86 @@ func TestSignalPatterns(t *testing.T) {
 		data := readFullData(t, "day8.dat")
 		fmt.Println(CountSimpleDigits(data))
 	})
+
+	singleLine := "edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc"
+
+	wantA := [10]string{}
+	wantA[0] = "abcdfg" // word will have six letters but is neither 6 nor 9
+	wantA[1] = "cg"
+	wantA[2] = "abcde"
+	wantA[3] = "bcdeg"
+	wantA[4] = "cefg"
+	wantA[5] = "bdefg"  // word will have 5 letters and whatever fourdiff was
+	wantA[6] = "abdefg" // word will have 6 letters and fourdiff but not all of 4
+	wantA[7] = "bcg"
+	wantA[8] = "abcdefg" // by definition
+	wantA[9] = "bcdefg"
+
+	for i := 0; i < 10; i++ {
+		t.Run(fmt.Sprintf("Identify number %d in single line", i), func(t *testing.T) {
+			got := DecodeSignal(singleLine)
+			if got[i] != wantA[i] {
+				t.Errorf("got %v want %v", got[i], wantA[i])
+			}
+		})
+	}
+	sampleValues := []int{
+		8394,
+		9781,
+		1197,
+		9361,
+		4873,
+		8418,
+		4548,
+		1625,
+		8717,
+		4315,
+	}
+	for i := 0; i < len(sampleValues); i++ {
+
+		t.Run(fmt.Sprintf("Calculate output value for sample line %d", i), func(t *testing.T) {
+			key := DecodeSignal(sampleSignalPattern[i])
+			got := OutputValue(sampleSignalPattern[i], key)
+			if got != sampleValues[i] {
+				t.Errorf("got %d want %d", got, sampleValues[i])
+			}
+		})
+	}
+
+	t.Run("Calculate fourdiff in single line", func(t *testing.T) {
+		got := wordsDiff("cefg", "cg")
+		want := "ef"
+
+		if got != want {
+			t.Errorf("got %q want %q", got, want)
+		}
+	})
+
+	t.Run("Calculate all output values for sample input", func(t *testing.T) {
+		got := 0
+		for _, s := range sampleSignalPattern {
+			key := DecodeSignal(s)
+			value := OutputValue(s, key)
+			got += value
+		}
+
+		want := 61229
+
+		if got != want {
+			t.Errorf("got %d want %d", got, want)
+		}
+	})
+
+	t.Run("Count full part 2", func(t *testing.T) {
+		data := readFullData(t, "day8.dat")
+		got := 0
+		for _, s := range data {
+			key := DecodeSignal(s)
+			value := OutputValue(s, key)
+			got += value
+		}
+		fmt.Println(got)
+	})
 }
 
 func readFullData(t *testing.T, fname string) []string {
