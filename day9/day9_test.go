@@ -18,6 +18,7 @@ func TestSmokeBasin(t *testing.T) {
 		"8767896789",
 		"9899965678",
 	}
+	heights := CreateHeightMap(heightMapStr)
 
 	assert := assert.New(t)
 
@@ -28,82 +29,71 @@ func TestSmokeBasin(t *testing.T) {
 			"333",
 			"333",
 		}
-		got := CreateMap(hMS)
-		want := [][]int{
+		h := CreateHeightMap(hMS)
+		want := FloorMap{
 			{3, 3, 3},
 			{3, 3, 3},
 			{3, 3, 3},
 		}
 
-		assert.Equal(got, want)
+		assert.Equal(want, h)
 	})
 
 	t.Run("Find low points", func(t *testing.T) {
-		heightMap := CreateMap(heightMapStr)
-		got := FindLowPoints(heightMap)
 		want := []int{1, 0, 5, 5}
 
-		assert.EqualValues(got, want)
+		assert.EqualValues(want, heights.FindLowPoints())
 	})
 
 	t.Run("Check low point center", func(t *testing.T) {
-		h := [][]int{
+		h := FloorMap{
 			{3, 3, 3},
 			{3, 0, 3},
 			{3, 3, 3},
 		}
-		got := minPoint(h, 1, 1)
-		want := true
 
-		assert.Equal(got, want)
+		assert.True(h.minPoint(1, 1))
 	})
 
 	t.Run("Check low point upper row", func(t *testing.T) {
-		h := [][]int{
+		h := FloorMap{
 			{3, 0, 3},
 			{3, 3, 3},
 			{3, 3, 3},
 		}
-		got := minPoint(h, 0, 1)
-		want := true
 
-		assert.Equal(got, want)
+		assert.True(h.minPoint(0, 1))
 	})
 
 	t.Run("Check low point upper left corner", func(t *testing.T) {
-		h := [][]int{
+		h := FloorMap{
 			{0, 3, 3},
 			{3, 3, 3},
 			{3, 3, 3},
 		}
-		got := minPoint(h, 0, 0)
-		want := true
 
-		assert.Equal(got, want)
+		assert.True(h.minPoint(0, 0))
 	})
 
 	t.Run("Check low point upper right corner", func(t *testing.T) {
-		h := [][]int{
+		h := FloorMap{
 			{3, 3, 0},
 			{3, 3, 3},
 			{3, 3, 3},
 		}
-		got := minPoint(h, 0, 2)
-		want := true
 
-		assert.Equal(got, want)
+		assert.True(h.minPoint(0, 2))
 	})
 
 	t.Run("Check not low point", func(t *testing.T) {
-		h := CreateMap(heightMapStr)
-		got := minPoint(h, 0, 5)
-		assert.False(got)
+		assert.False(heights.minPoint(0, 5))
 	})
 
 	t.Run("Find low points in full data", func(t *testing.T) {
 		data := readFullData(t, "day9.dat")
-		h := CreateMap(data)
-		lowPoints := FindLowPoints(h)
+
+		heights := CreateHeightMap(data)
+		lowPoints := heights.FindLowPoints()
 		sum := 0
 		for _, n := range lowPoints {
 			sum += n
@@ -111,6 +101,15 @@ func TestSmokeBasin(t *testing.T) {
 		sum += len(lowPoints)
 		fmt.Println(sum)
 	})
+
+	t.Run("Check point not in basin", func(t *testing.T) {
+		assert.False(heights.InBasin(4, 0))
+	})
+
+	t.Run("Check point in basin", func(t *testing.T) {
+		assert.True(heights.InBasin(0, 0))
+	})
+
 }
 func readFullData(t *testing.T, fname string) []string {
 	t.Helper()
