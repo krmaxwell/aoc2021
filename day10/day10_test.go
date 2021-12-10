@@ -10,6 +10,7 @@ import (
 )
 
 func TestBraces(t *testing.T) {
+
 	sampleSubsystem := []string{
 		"[({(<(())[]>[[{[]{<()<>>",
 		"[(()[<>])]({[<{<<[]>>(",
@@ -22,36 +23,37 @@ func TestBraces(t *testing.T) {
 		"<{([([[(<>()){}]>(<<{{",
 		"<{([{{}}[<[[[<>{}]]]>[]]",
 	}
+
 	assert := assert.New(t)
 
 	t.Run("Flag corrupted line with unexpected ')'", func(t *testing.T) {
-		assert.Equal(3, TestLine("[<(<(<(<{}))><([]([]()"))
+		assert.Equal(3, ValidateChunks("[<(<(<(<{}))><([]([]()"))
 	})
 
 	t.Run("Flag corrupted line with unexpected ']'", func(t *testing.T) {
-		assert.Equal(57, TestLine("[{[{({}]{}}([{[{{{}}([]"))
+		assert.Equal(57, ValidateChunks("[{[{({}]{}}([{[{{{}}([]"))
 	})
 
 	t.Run("Flag corrupted line with unexpected '}'", func(t *testing.T) {
-		assert.Equal(1197, TestLine("{([(<{}[<>[]}>{[]{[(<()>"))
+		assert.Equal(1197, ValidateChunks("{([(<{}[<>[]}>{[]{[(<()>"))
 	})
 
 	t.Run("Flag corrupted line with unexpected '>'", func(t *testing.T) {
-		assert.Equal(25137, TestLine("<{([([[(<>()){}]>(<<{{"))
+		assert.Equal(25137, ValidateChunks("<{([([[(<>()){}]>(<<{{"))
 	})
 
 	t.Run("Validate complete line", func(t *testing.T) {
-		assert.Equal(0, TestLine("(<>)"))
+		assert.Equal(0, ValidateChunks("(<>)"))
 	})
 
 	t.Run("Validate incomplete line", func(t *testing.T) {
-		assert.Equal(0, TestLine(sampleSubsystem[0]))
+		assert.Equal(0, ValidateChunks(sampleSubsystem[0]))
 	})
 
 	t.Run("Sum scores for sample subsystem", func(t *testing.T) {
 		got := 0
 		for _, s := range sampleSubsystem {
-			got += TestLine(s)
+			got += ValidateChunks(s)
 		}
 		assert.Equal(26397, got)
 	})
@@ -60,7 +62,7 @@ func TestBraces(t *testing.T) {
 		data := readFullData(t, "day10.dat")
 		got := 0
 		for _, s := range data {
-			got += TestLine(s)
+			got += ValidateChunks(s)
 		}
 		fmt.Println(got)
 	})

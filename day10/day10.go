@@ -1,35 +1,62 @@
 package day10
 
-func TestLine(s string) int {
-	stack := []rune{}
+type RuneStack struct {
+	items []rune
+	top   int
+}
+
+func ValidateChunks(s string) int {
+	seen := RuneStack{}
+	expected := RuneStack{}
 	for _, c := range s {
-		if c == '(' || c == '{' || c == '<' || c == '[' {
-			stack = append(stack, c) // push
-		} else if c == ')' {
-			if stack[len(stack)-1] == '(' {
-				stack = stack[:len(stack)-1] // pop
+		switch c {
+		case '(':
+			seen.Push(c)
+			expected.Push(')')
+		case '{':
+			seen.Push(c)
+			expected.Push('}')
+		case '<':
+			seen.Push(c)
+			expected.Push('>')
+		case '[':
+			seen.Push(c)
+			expected.Push(']')
+		case ']', '>', '}', ')':
+			if expected.Peek() == c {
+				// pop from both stacks, continues to be valid
+				expected.Pop()
+				seen.Pop()
 			} else {
-				return 3
-			}
-		} else if c == '}' {
-			if stack[len(stack)-1] == '{' {
-				stack = stack[:len(stack)-1] // pop
-			} else {
-				return 1197
-			}
-		} else if c == '>' {
-			if stack[len(stack)-1] == '<' {
-				stack = stack[:len(stack)-1] // pop
-			} else {
-				return 25137
-			}
-		} else if c == ']' {
-			if stack[len(stack)-1] == '[' {
-				stack = stack[:len(stack)-1] // pop
-			} else {
-				return 57
+				switch c {
+				case ')':
+					return 3
+				case ']':
+					return 57
+				case '}':
+					return 1197
+				case '>':
+					return 25137
+				}
 			}
 		}
 	}
 	return 0
+}
+
+func (r *RuneStack) Push(c rune) {
+	r.items = append(r.items, c)
+	r.top++
+}
+
+func (r *RuneStack) Peek() rune {
+	c := r.items[r.top-1]
+	return c
+}
+
+func (r *RuneStack) Pop() rune {
+	c := r.items[r.top-1]
+	r.items = r.items[:r.top-1]
+	r.top--
+	return c
 }
