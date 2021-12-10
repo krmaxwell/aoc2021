@@ -5,9 +5,15 @@ type RuneStack struct {
 	top   int
 }
 
-func ValidateChunks(s string) int {
+type SubsystemResult struct {
+	Score int
+	Valid bool
+}
+
+func ValidateChunks(s string) SubsystemResult {
 	seen := RuneStack{}
 	expected := RuneStack{}
+	result := SubsystemResult{Score: 0, Valid: false}
 	for _, c := range s {
 		switch c {
 		case '(':
@@ -30,18 +36,43 @@ func ValidateChunks(s string) int {
 			} else {
 				switch c {
 				case ')':
-					return 3
+					result.Score = 3
+					return result
 				case ']':
-					return 57
+					result.Score = 57
+					return result
 				case '}':
-					return 1197
+					result.Score = 1197
+					return result
 				case '>':
-					return 25137
+					result.Score = 25137
+					return result
 				}
 			}
 		}
 	}
-	return 0
+	result.Valid = true
+	result.Score = CompletionScore(expected)
+	return result
+}
+
+func CompletionScore(r RuneStack) int {
+	total := 0
+	for i := len(r.items); i > 0; i-- {
+		c := r.Pop()
+		total *= 5
+		switch c {
+		case ')':
+			total += 1
+		case ']':
+			total += 2
+		case '}':
+			total += 3
+		case '>':
+			total += 4
+		}
+	}
+	return total
 }
 
 func (r *RuneStack) Push(c rune) {
