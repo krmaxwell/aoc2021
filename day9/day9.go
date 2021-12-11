@@ -14,6 +14,42 @@ func CreateHeightMap(strMap []string) FloorMap {
 	return newMap
 }
 
+func CreateBasinMap(heights FloorMap) FloorMap {
+	basins := make([][]int, len(heights))
+	for i := range heights {
+		basins[i] = make([]int, len(heights[i]))
+	}
+	currentBasin := 0
+
+	for i := range basins {
+		for j := range basins[i] {
+			if heights[i][j] == 9 {
+				basins[i][j] = -1 // top of a ridge is not in a basin
+			} else {
+				if i > 0 && basins[i-1][j] > -1 {
+					// match the basin ID above us
+					basins[i][j] = basins[i-1][j]
+				} else if j > 0 && basins[i][j-1] > -1 {
+					// match the basin ID to our left
+					basins[i][j] = basins[i][j-1]
+				} else if i < len(basins)-1 && basins[i+1][j] > -1 {
+					// match the basin ID below us
+					basins[i][j] = basins[i+1][j]
+				} else if j < len(basins[i])-1 && basins[i][j+1] > -1 {
+					// match the basin ID to our right
+					basins[i][j] = basins[i][j+1]
+				} else {
+					// new basin
+					basins[i][j] = currentBasin + 1
+					currentBasin++
+				}
+
+			}
+		}
+	}
+	return basins
+}
+
 func (f FloorMap) FindLowPoints() []int {
 	lowPoints := []int{}
 	for i := range f {
@@ -48,8 +84,4 @@ func (f FloorMap) minPoint(x, y int) bool {
 		}
 	}
 	return min > point
-}
-
-func (f FloorMap) InBasin(x, y int) bool {
-	return f[x][y] < 9
 }

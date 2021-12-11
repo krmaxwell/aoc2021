@@ -19,6 +19,7 @@ func TestSmokeBasin(t *testing.T) {
 		"9899965678",
 	}
 	heights := CreateHeightMap(heightMapStr)
+	basins := CreateBasinMap(heights)
 
 	assert := assert.New(t)
 
@@ -103,11 +104,16 @@ func TestSmokeBasin(t *testing.T) {
 	})
 
 	t.Run("Check point not in basin", func(t *testing.T) {
-		assert.False(heights.InBasin(4, 0))
+		assert.Equal(-1, basins[4][0])
 	})
 
-	t.Run("Check point in basin", func(t *testing.T) {
-		assert.True(heights.InBasin(0, 0))
+	t.Run("Check point in basin 0", func(t *testing.T) {
+		fmt.Println(basins)
+		assert.Equal(0, basins[0][0])
+	})
+
+	t.Run("Check point in basin 1", func(t *testing.T) {
+		assert.Equal(1, basins[0][9])
 	})
 
 }
