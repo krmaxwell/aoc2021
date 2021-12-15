@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -131,7 +132,29 @@ func TestBasins(t *testing.T) {
 		assert.Equal(1, basins[0][0])
 	})
 
+	t.Run("Check basin sizes", func(t *testing.T) {
+		counts := basins.CountBasins()
+		assert.Equal(3, counts[1])
+		assert.Equal(9, counts[2])
+	})
+
+	t.Run("Create basins from full data", func(t *testing.T) {
+		data := readFullData(t, "day9.dat")
+
+		heightMap := CreateHeightMap(data)
+		points := heightMap.FindLowPoints()
+		basinMap := CreateBasinMap(heightMap, points)
+		basinCounts := basinMap.CountBasins()
+		basinSizes := make([]int, len(basinCounts)+1)
+		for i, b := range basinCounts {
+			basinSizes[i] = b
+		}
+		sort.Ints(basinSizes)
+		fmt.Println(basinSizes[len(basinSizes)-1] * basinSizes[len(basinSizes)-2] * basinSizes[len(basinSizes)-3])
+
+	})
 }
+
 func readFullData(t *testing.T, fname string) []string {
 	t.Helper()
 	f, err := os.Open(fname)

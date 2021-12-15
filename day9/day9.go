@@ -115,3 +115,16 @@ func (f FloorMap) Print() {
 		fmt.Println()
 	}
 }
+
+func (f FloorMap) CountBasins() map[int]int {
+	var basins = make(map[int]int)
+	for i := range f {
+		for j := range f[0] {
+			if f[i][j] < 0 { // don't count ridges
+				continue
+			}
+			basins[f[i][j]]++
+		}
+	}
+	return basins
+}
