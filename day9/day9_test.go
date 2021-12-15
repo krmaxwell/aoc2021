@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSmokeBasin(t *testing.T) {
+func TestHeightMap(t *testing.T) {
 
 	heightMapStr := []string{
 		"2199943210",
@@ -19,7 +19,6 @@ func TestSmokeBasin(t *testing.T) {
 		"9899965678",
 	}
 	heights := CreateHeightMap(heightMapStr)
-	basins := CreateBasinMap(heights)
 
 	assert := assert.New(t)
 
@@ -42,8 +41,13 @@ func TestSmokeBasin(t *testing.T) {
 
 	t.Run("Find low points", func(t *testing.T) {
 		want := []int{1, 0, 5, 5}
+		lowPoints := heights.FindLowPoints()
+		lowValues := []int{}
+		for i := range lowPoints {
+			lowValues = append(lowValues, lowPoints[i].Value)
+		}
 
-		assert.EqualValues(want, heights.FindLowPoints())
+		assert.EqualValues(want, lowValues)
 	})
 
 	t.Run("Check low point center", func(t *testing.T) {
@@ -97,23 +101,34 @@ func TestSmokeBasin(t *testing.T) {
 		lowPoints := heights.FindLowPoints()
 		sum := 0
 		for _, n := range lowPoints {
-			sum += n
+			sum += n.Value
 		}
 		sum += len(lowPoints)
 		fmt.Println(sum)
 	})
+}
+
+func TestBasins(t *testing.T) {
+	heightMapStr := []string{
+		"2199943210",
+		"3987894921",
+		"9856789892",
+		"8767896789",
+		"9899965678",
+	}
+	heights := CreateHeightMap(heightMapStr)
+	assert := assert.New(t)
+
+	points := heights.FindLowPoints()
+	basins := CreateBasinMap(heights, points)
+	//basins.Print()
 
 	t.Run("Check point not in basin", func(t *testing.T) {
 		assert.Equal(-1, basins[4][0])
 	})
 
-	t.Run("Check point in basin 0", func(t *testing.T) {
-		fmt.Println(basins)
-		assert.Equal(0, basins[0][0])
-	})
-
-	t.Run("Check point in basin 1", func(t *testing.T) {
-		assert.Equal(1, basins[0][9])
+	t.Run("Check first low points has basin ID 1", func(t *testing.T) {
+		assert.Equal(1, basins[0][0])
 	})
 
 }

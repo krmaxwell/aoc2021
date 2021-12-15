@@ -1,6 +1,12 @@
 package day9
 
+import "fmt"
+
 type FloorMap [][]int
+
+type Point struct {
+	Value, X, Y int
+}
 
 func CreateHeightMap(strMap []string) FloorMap {
 	var newMap FloorMap
@@ -14,48 +20,59 @@ func CreateHeightMap(strMap []string) FloorMap {
 	return newMap
 }
 
-func CreateBasinMap(heights FloorMap) FloorMap {
+func CreateBasinMap(heights FloorMap, lowPoints []Point) FloorMap {
+
+	// initialization
 	basins := make([][]int, len(heights))
 	for i := range heights {
-		basins[i] = make([]int, len(heights[i]))
-	}
-	currentBasin := 0
-
-	for i := range basins {
+		basins[i] = make([]int, len(heights[0]))
 		for j := range basins[i] {
-			if heights[i][j] == 9 {
-				basins[i][j] = -1 // top of a ridge is not in a basin
+			if heights[i][j] == 9 { // ridges are not in any basin
+				basins[i][j] = -1
 			} else {
-				if i > 0 && basins[i-1][j] > -1 {
-					// match the basin ID above us
-					basins[i][j] = basins[i-1][j]
-				} else if j > 0 && basins[i][j-1] > -1 {
-					// match the basin ID to our left
-					basins[i][j] = basins[i][j-1]
-				} else if i < len(basins)-1 && basins[i+1][j] > -1 {
-					// match the basin ID below us
-					basins[i][j] = basins[i+1][j]
-				} else if j < len(basins[i])-1 && basins[i][j+1] > -1 {
-					// match the basin ID to our right
-					basins[i][j] = basins[i][j+1]
-				} else {
-					// new basin
-					basins[i][j] = currentBasin + 1
-					currentBasin++
-				}
-
+				basins[i][j] = 0 // we'll figure out which basin later
 			}
 		}
+	}
+
+	// flood fill
+	basinID := 1
+	for _, p := range lowPoints {
+		//fmt.Printf("Flood fill basin %d starting at x %d y %d\n", basinID, p.X, p.Y)
+		basins = floodFill(basins, p.X, p.Y, basinID)
+		basinID++
 	}
 	return basins
 }
 
-func (f FloorMap) FindLowPoints() []int {
-	lowPoints := []int{}
+func floodFill(basinMap [][]int, x, y, basinID int) [][]int {
+	if x < 0 || y < 0 || x >= len(basinMap) || y >= len(basinMap[0]) { // point outside the map
+		return basinMap
+	}
+	if basinMap[x][y] == -1 { // ridge
+		return basinMap
+	}
+	if basinMap[x][y] == 0 {
+		//fmt.Printf("Set x %d y %d to %d\n", x, y, basinID)
+		basinMap[x][y] = basinID
+	} else {
+		//fmt.Printf("Found x %d y %d is already %d\n", x, y, basinID)
+		return basinMap
+	}
+	basinMap = floodFill(basinMap, x+1, y, basinID) // south
+	basinMap = floodFill(basinMap, x-1, y, basinID) // north
+	basinMap = floodFill(basinMap, x, y+1, basinID) // east
+	basinMap = floodFill(basinMap, x, y-1, basinID) // west
+	return basinMap
+}
+
+func (f FloorMap) FindLowPoints() []Point {
+	lowPoints := []Point{}
 	for i := range f {
 		for j := range f[i] {
 			if f.minPoint(i, j) {
-				lowPoints = append(lowPoints, f[i][j])
+				point := Point{Value: f[i][j], X: i, Y: j}
+				lowPoints = append(lowPoints, point)
 			}
 		}
 	}
@@ -84,4 +101,17 @@ func (f FloorMap) minPoint(x, y int) bool {
 		}
 	}
 	return min > point
+}
+
+func (f FloorMap) Print() {
+	for i := range f {
+		for j := range f[0] {
+			if f[i][j] >= 0 {
+				fmt.Print(f[i][j])
+			} else {
+				fmt.Print("#")
+			}
+		}
+		fmt.Println()
+	}
 }
