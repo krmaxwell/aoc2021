@@ -85,7 +85,7 @@ func TestFold(t *testing.T) {
 		paper = paper.Fold(0, 55)
 		paper = paper.Fold(40, 0)
 		paper = paper.Fold(0, 27)
-		paper = paper.Fold(0, 23)
+		paper = paper.Fold(0, 13)
 		paper = paper.Fold(0, 6)
 		paper.Print()
 	})
