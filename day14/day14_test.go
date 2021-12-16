@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSampleData(t *testing.T) {
+func TestSampleData10Steps(t *testing.T) {
 	assert := assert.New(t)
 	template := "NNCB"
 
@@ -52,7 +52,7 @@ func TestSampleData(t *testing.T) {
 	fmt.Println(mostC - leastC)
 }
 
-func TestFullData(t *testing.T) {
+func TestFullData10Steps(t *testing.T) {
 	template := "SFBBNKKOHHHPFOFFSPFV"
 
 	input := readFullData(t, "day14.dat")
@@ -83,4 +83,53 @@ func readFullData(t *testing.T, fname string) []string {
 	}
 
 	return data
+}
+
+func TestSampleData40Steps(t *testing.T) {
+	assert := assert.New(t)
+	template := "NNCB"
+
+	ruleInput := []string{
+		"CH -> B",
+		"HH -> N",
+		"CB -> H",
+		"NH -> C",
+		"HB -> C",
+		"HC -> B",
+		"HN -> C",
+		"NN -> C",
+		"BH -> H",
+		"NC -> B",
+		"NB -> B",
+		"BN -> B",
+		"BB -> N",
+		"BC -> B",
+		"CC -> N",
+		"CN -> C",
+	}
+
+	rules := MakeRules(ruleInput)
+	counts := CountPairs(template)
+	counts = ProcessPairs(counts, rules, 40)
+
+	mostC := most(counts, "B")
+	assert.Equal(2192039569602, mostC)
+
+	leastC := least(counts, "B")
+	assert.Equal(3849876073, leastC)
+	fmt.Println(mostC - leastC)
+}
+
+func TestFullData40Steps(t *testing.T) {
+	template := "SFBBNKKOHHHPFOFFSPFV"
+
+	input := readFullData(t, "day14.dat")
+	rules := MakeRules(input)
+	counts := CountPairs(template)
+	counts = ProcessPairs(counts, rules, 40)
+
+	mostC := most(counts, "V")
+	leastC := least(counts, "V")
+	fmt.Println(mostC - leastC)
+
 }
