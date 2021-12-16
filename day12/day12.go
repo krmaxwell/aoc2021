@@ -4,6 +4,8 @@ import (
 	"strings"
 )
 
+// patterned on https://github.com/Rtchaik/AoC-2021/blob/main/Day12/solution.py
+
 type CaveMap map[string][]string
 
 func FindPaths(caveMap map[string][]string, path []string, routes *int) int {
@@ -12,8 +14,9 @@ func FindPaths(caveMap map[string][]string, path []string, routes *int) int {
 	// small caves (lower case) can only be visited once on a path
 	this := path[len(path)-1]
 	for _, next := range caveMap[this] {
-		if !IsSmallCave(next) || !InPath(path, next) {
-			if this == "end" {
+		if IsLargeCave(next) || !InPath(path, next) {
+			if next == "end" {
+				//fmt.Println(path)
 				*routes++
 			} else {
 				FindPaths(caveMap, append(path, next), routes)
@@ -24,11 +27,12 @@ func FindPaths(caveMap map[string][]string, path []string, routes *int) int {
 	return *routes
 }
 
-func IsSmallCave(s string) bool {
-	return strings.ToLower(s) == s
+func IsLargeCave(s string) bool {
+	return strings.ToUpper(s) == s
 }
 
 func InPath(path []string, goal string) bool {
+	// O(n) set emulation
 	for _, point := range path {
 		if point == goal {
 			return true
