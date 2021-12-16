@@ -27,6 +27,30 @@ func FindPaths(caveMap map[string][]string, path []string, routes *int) int {
 	return *routes
 }
 
+func FindLongerPaths(caveMap map[string][]string, path []string, routes *int, secondVisit bool) int {
+	// implement depth-first search
+	// big caves (upper case) can be visited as many times as required on a path
+	// small caves (lower case) can only be visited once on a path
+	this := path[len(path)-1]
+	for _, next := range caveMap[this] {
+		if next == "end" {
+			path = append(path, next)
+			//fmt.Println(path)
+			*routes++
+		} else if next == "start" {
+			continue
+		} else if IsLargeCave(next) {
+			FindLongerPaths(caveMap, append(path, next), routes, secondVisit)
+		} else if !secondVisit {
+			FindLongerPaths(caveMap, append(path, next), routes, InPath(path, next))
+		} else if secondVisit && !InPath(path, next) {
+			FindLongerPaths(caveMap, append(path, next), routes, secondVisit)
+		}
+
+	}
+	return *routes
+}
+
 func IsLargeCave(s string) bool {
 	return strings.ToUpper(s) == s
 }
