@@ -1,7 +1,9 @@
 package day14
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -34,23 +36,51 @@ func TestSampleData(t *testing.T) {
 	assert.Len(rules, len(ruleInput))
 	assert.Contains(rules, "CH")
 
-	pairs := MakePairs(template)
-	assert.Len(pairs, 3)
-	assert.Contains(pairs, "NN")
-	assert.Contains(pairs, "NC")
-	assert.Contains(pairs, "CB")
+	counts := CountPairs(template)
+	assert.Contains(counts, "NN")
+	assert.Contains(counts, "NC")
+	assert.Contains(counts, "CB")
+	fmt.Println(counts)
 
-	pairs = ProcessPairs(pairs, rules)
+	counts = ProcessPairs(counts, rules, 10)
 
-	// after 1 step
-	assert.Equal(2, most(pairs, "B"))
+	mostC := most(counts, "B")
+	assert.Equal(1749, mostC)
 
-	pairs = ProcessPairs(pairs, rules)
+	leastC := least(counts, "B")
+	assert.Equal(161, leastC)
+	fmt.Println(mostC - leastC)
+}
 
-	// 39 more steps
-	for i := 0; i < 39; i++ {
-		pairs = ProcessPairs(pairs, rules)
+func TestFullData(t *testing.T) {
+	template := "SFBBNKKOHHHPFOFFSPFV"
+
+	input := readFullData(t, "day14.dat")
+	rules := MakeRules(input)
+	counts := CountPairs(template)
+	counts = ProcessPairs(counts, rules, 10)
+
+	mostC := most(counts, "V")
+	leastC := least(counts, "V")
+	fmt.Println(mostC - leastC)
+
+}
+
+func readFullData(t *testing.T, fname string) []string {
+	t.Helper()
+	f, err := os.Open(fname)
+	if err != nil {
+		t.Fatalf("Could not open %q: %q", fname, err)
 	}
-	fmt.Println(pairs)
-	assert.Equal(1749, most(pairs, "B"))
+
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	data := []string{}
+
+	for scanner.Scan() {
+		data = append(data, scanner.Text())
+	}
+
+	return data
 }

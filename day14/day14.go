@@ -2,20 +2,30 @@ package day14
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
-func MakeRules(input []string) map[string]string {
-	rules := make(map[string]string, len(input))
+type Rules map[string][2]string // e.g. {"CH": [2]string{"CB", "HB"}}
+
+type Count map[string]int // e.g. {"NB": 2}
+
+func MakeRules(input []string) Rules {
+	rules := Rules{}
 	for _, r := range input {
 		rs := strings.Split(r, " -> ")
-		rules[rs[0]] = rs[1]
+		inFrag := rs[0] // string on LH side of arrow separator
+		outFrags := [2]string{
+			fmt.Sprintf("%c%s", inFrag[0], rs[1]), // probably a more efficient way exists
+			fmt.Sprintf("%s%c", rs[1], inFrag[1]),
+		}
+		rules[inFrag] = outFrags
 	}
 	return rules
 }
 
-func MakePairs(s string) map[string]int {
-	pairs := make(map[string]int)
+func CountPairs(s string) Count {
+	pairs := Count{}
 	for i := range s {
 		if i == len(s)-1 {
 			break
@@ -25,30 +35,55 @@ func MakePairs(s string) map[string]int {
 	return pairs
 }
 
-func ProcessPairs(pairs map[string]int, rules map[string]string) map[string]int {
-	newPairs := make(map[string]int)
-	for p := range pairs {
-		p0 := fmt.Sprintf("%c%s", p[0], rules[p])
-		p1 := fmt.Sprintf("%s%c", rules[p], p[1])
-		newPairs[p0]++
-		newPairs[p1]++
+func ProcessPairs(pairs Count, rules Rules, maxSteps int) Count {
+	newPairs := Count{}
+	for i := 0; i < maxSteps; i++ {
+		// each step, go thru each existing pair
+		for pair, c := range pairs {
+			p0 := rules[pair][0]
+			p1 := rules[pair][1]
+
+			newPairs[p0] += c
+			newPairs[p1] += c
+		}
+
+		pairs = Count{}
+		for k, v := range newPairs {
+			pairs[k] = v
+		}
+		newPairs = Count{}
 	}
-	return newPairs
+	return pairs
 }
 
-func most(pairs map[string]int, final string) int {
-	count := make(map[byte]int)
+func most(pairs Count, final string) int {
+	count := Count{}
 	//fmt.Println(pairs)
-	for p := range pairs {
-		count[p[0]] += pairs[p]
+	for p, c := range pairs {
+		count[string(p[0])] += c
 	}
-	count[final[0]]++
+	count[final]++
 	max := 0
-	for p := range count {
-		//fmt.Printf("%c: %d\n", p, c[p])
-		if count[p] > max {
-			max = count[p]
+	for _, c := range count {
+		if c > max {
+			max = c
 		}
 	}
 	return max
+}
+
+func least(pairs Count, final string) int {
+	count := Count{}
+	//fmt.Println(pairs)
+	for p, c := range pairs {
+		count[string(p[0])] += c
+	}
+	count[final]++
+	min := math.MaxInt
+	for _, c := range count {
+		if c < min {
+			min = c
+		}
+	}
+	return min
 }
